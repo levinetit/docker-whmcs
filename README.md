@@ -19,7 +19,7 @@ Ready to use docker image for WHMCS environment.
 
 We utilise the docker manifest for multi-platform awareness. More information is available from docker [here](https://github.com/docker/distribution/blob/master/docs/spec/manifest-v2-2.md#manifest-list).
 
-Simply pulling `ghcr.io/darthshadow/whmcs:latest` should retrieve the correct image for your arch.
+Simply pulling `ghcr.io/levinetit/whmcs:latest` should retrieve the correct image for your arch.
 
 The architectures supported by this image are:
 
@@ -40,7 +40,7 @@ Here are some example snippets to help you get started creating a container.
 version: "3.8"
 services:
   whmcs:
-    image: ghcr.io/darthshadow/whmcs:latest
+    image: ghcr.io/levinetit/whmcs:latest
     hostname: whmcs
     container_name: whmcs
     environment:
@@ -73,7 +73,7 @@ docker run -d \
   -p 8043:80 \
   -v /path/to/whmcs:/config \
   --restart unless-stopped \
-  ghcr.io/darthshadow/whmcs:latest
+  ghcr.io/levinetit/whmcs:latest
 ```
 
 ## Parameters
