@@ -1,0 +1,58 @@
+#!/usr/bin/with-contenv bash
+
+echo "**** Create custom nginx config folder ****"
+mkdir -p \
+  /config/nginx/
+
+echo "**** Create default Nginx Global Config: /config/nginx/nginx.conf ****"
+if [ ! -f "/config/nginx/nginx.conf" ]; then
+  cp -vf /defaults/nginx/nginx.conf /config/nginx/nginx.conf
+fi
+
+echo "**** Copy Nginx Global Config: /etc/nginx/nginx.conf ****"
+if [ -f "/etc/nginx/nginx.conf" ]; then
+  cp -vf /etc/nginx/nginx.conf /etc/nginx/nginx.conf.bak
+fi
+cp -vf /config/nginx/nginx.conf /etc/nginx/nginx.conf
+
+echo "**** Create default Nginx PHP Config: /config/nginx/conf.d/php ****"
+if [ ! -f "/config/nginx/conf.d/php" ]; then
+  mkdir -p /config/nginx/conf.d/
+  cp -vf /defaults/nginx/conf.d/php /config/nginx/conf.d/php
+fi
+
+echo "**** Update WHMCS Server IP: /config/nginx/conf.d/php ****"
+sed -i "s/WHMCS_SERVER_IP/${WHMCS_SERVER_IP}/" /config/nginx/conf.d/php
+
+echo "**** Copy Nginx PHP Config: /etc/nginx/conf.d/php ****"
+cp -vf /config/nginx/conf.d/php /etc/nginx/conf.d/php
+
+echo "**** Copy Nginx Admin Config: /etc/nginx/conf.d/admin-{auth,noauth} ****"
+cp -vf /defaults/nginx/conf.d/admin-{auth,noauth} /etc/nginx/conf.d/
+
+if [[ ! ${AUTH_USER} ]] && [[ ! ${AUTH_PASS} ]]; then
+    echo "**** Skipped creation of .htpasswd due to empty AUTH_USER & AUTH_PASS ****"
+    ln -svf /etc/nginx/conf.d/admin-noauth /etc/nginx/conf.d/admin
+else
+    echo "**** Generate Nginx .htpasswd: /config/nginx/.htpasswd ****"
+    rm -vf /etc/nginx/.htpasswd && htpasswd -c -b -B -C 8 /etc/nginx/.htpasswd ${AUTH_USER} ${AUTH_PASS}
+    ln -svf /etc/nginx/conf.d/admin-auth /etc/nginx/conf.d/admin
+fi
+
+echo "**** Create default Nginx WHMCS Config: /config/nginx/sites-available/whmcs ****"
+if [ ! -f "/config/nginx/sites-available/whmcs" ]; then
+  mkdir -p /config/nginx/sites-available/
+  cp -vf /defaults/nginx/sites-available/whmcs /config/nginx/sites-available/whmcs
+fi
+
+echo "**** Update WHMCS Server URL: /config/nginx/sites-available/whmcs ****"
+sed -i "s/server_name _/server_name ${WHMCS_SERVER_URL}/" /config/nginx/sites-available/whmcs
+
+echo "**** Set Nginx Permissions ****"
+chown abc:abc -R /config/nginx/
+
+echo "**** Copy Nginx WHMCS Config: /etc/nginx/sites-available/whmcs ****"
+cp -vf /config/nginx/sites-available/whmcs /etc/nginx/sites-available/whmcs
+
+echo "**** Enable Nginx WHMCS Config: /etc/nginx/sites-available/whmcs ****"
+ln -svf /etc/nginx/sites-available/whmcs /etc/nginx/sites-enabled/whmcs

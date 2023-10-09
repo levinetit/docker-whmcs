@@ -1,0 +1,8 @@
+#!/usr/bin/with-contenv bash
+
+echo "Starting php-fpm${PHP_VERSION} ..."
+
+export PHP_SESSION_GC_PROPABILITY=0
+
+exec \
+    /usr/sbin/php-fpm${PHP_VERSION} -F
