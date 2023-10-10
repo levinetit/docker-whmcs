@@ -3,7 +3,7 @@ FROM lscr.io/linuxserver/baseimage-ubuntu:jammy
 
 ARG BUILD_DATE
 LABEL build_date="Build-date:- ${BUILD_DATE}"
-LABEL maintainer="darthShadow"
+LABEL maintainer="levinetit"
 
 ARG TARGETARCH
 # 8.1
