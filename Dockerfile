@@ -21,6 +21,13 @@ ENV WHMCS_SERVER_IP="\$server_addr" WHMCS_SERVER_URL="_"
 
 ENV DEBIAN_FRONTEND="noninteractive"
 
+# Add the MariaDB repository
+RUN apt update && apt install -y software-properties-common
+RUN add-apt-repository 'deb https://downloads.mariadb.org/mariadb/10.8/debian jammy main'
+
+# Install add repozitory MariaDB
+RUN apt update && apt install -y mariadb-server mariadb-client
+
 # Install MariaDB
 RUN echo "**** Install MariaDB ****" && \
     apt-get -y install mariadb-server mariadb-client
