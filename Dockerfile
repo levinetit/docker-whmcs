@@ -21,6 +21,18 @@ ENV WHMCS_SERVER_IP="\$server_addr" WHMCS_SERVER_URL="_"
 
 ENV DEBIAN_FRONTEND="noninteractive"
 
+# Install MariaDB
+RUN echo "**** Install MariaDB ****" && \
+    apt-get -y install mariadb-server mariadb-client
+
+# Create the WHMCS database
+RUN echo "**** Create the WHMCS database ****" && \
+    mysql -uroot -p -e "CREATE DATABASE whmcs;"
+
+# Create the WHMCS user
+RUN echo "**** Create the WHMCS user ****" && \
+    mysql -uroot -p -e "GRANT ALL ON whmcs.* TO 'whmcsuser'@'localhost' IDENTIFIED BY 'whmcspass';"
+    
 # Install nginx and PHP
 RUN echo "**** Install Dependencies ****" && \
     apt-get -y update && \
