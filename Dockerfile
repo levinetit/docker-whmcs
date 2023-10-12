@@ -21,11 +21,14 @@ ENV WHMCS_SERVER_IP="\$server_addr" WHMCS_SERVER_URL="_"
 
 ENV DEBIAN_FRONTEND="noninteractive"
 
-# # Adaugă repository-ul pentru MariaDB
-RUN apt-get update && \
-    apt-get install -y software-properties-common && \
-    add-apt-repository 'deb [arch=amd64,arm64,ppc64el] http://sfo1.mirrors.digitalocean.com/mariadb/repo/10.5/ubuntu jammy main' && \
-    apt-get update
+# Add MariaDB repository
+RUN echo "deb [arch=amd64,arm64] https://downloads.mariadb.org/mariadb/repositories/Ubuntu/ jammy main" | tee /etc/apt/sources.list.d/mariadb.list
+
+# Update the sources list
+RUN apt-get update
+
+# Install MariaDB
+RUN apt-get -y install mariadb-server
 
 
 # Create the WHMCS database
