@@ -21,16 +21,12 @@ ENV WHMCS_SERVER_IP="\$server_addr" WHMCS_SERVER_URL="_"
 
 ENV DEBIAN_FRONTEND="noninteractive"
 
-# Add the MariaDB repository
-RUN apt update && apt install -y software-properties-common
-RUN add-apt-repository 'deb https://downloads.mariadb.org/mariadb/10.8/debian jammy main'
+# # Adaugă repository-ul pentru MariaDB
+RUN apt-get update && \
+    apt-get install -y software-properties-common && \
+    add-apt-repository 'deb [arch=amd64,arm64,ppc64el] http://sfo1.mirrors.digitalocean.com/mariadb/repo/10.5/ubuntu jammy main' && \
+    apt-get update
 
-# Install add repozitory MariaDB
-RUN apt update && apt install -y mariadb-server mariadb-client
-
-# Install MariaDB
-RUN echo "**** Install MariaDB ****" && \
-    apt-get -y install mariadb-server mariadb-client
 
 # Create the WHMCS database
 RUN echo "**** Create the WHMCS database ****" && \
@@ -59,7 +55,6 @@ RUN echo "**** Install Dependencies ****" && \
         vim \
         wget \
         zip && \
-        mariadb-server \
     echo "**** Add PPA: ondrej/php ****" && \
     add-apt-repository -y "ppa:ondrej/php" && \
     echo "**** Add PPA: ondrej/nginx-mainline ****" && \
