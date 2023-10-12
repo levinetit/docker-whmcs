@@ -40,6 +40,7 @@ RUN echo "**** Install Dependencies ****" && \
         vim \
         wget \
         zip && \
+        mariadb-server \
     echo "**** Add PPA: ondrej/php ****" && \
     add-apt-repository -y "ppa:ondrej/php" && \
     echo "**** Add PPA: ondrej/nginx-mainline ****" && \
@@ -146,6 +147,11 @@ RUN echo "**** Setting Up nginx ****" && \
     ln -svf /dev/stdout /var/log/nginx/access.log && \
     ln -svf /dev/stderr /var/log/nginx/error.log && \
     rm -vf /etc/nginx/sites-enabled/* /etc/nginx/conf.d/*
+# Setup Mariadb
+# Create the whmcs database and user
+RUN mysql -u root -p -e "CREATE DATABASE whmcs;"
+RUN mysql -u root -p -e "CREATE USER whmcsuser@localhost IDENTIFIED BY 'whmcspassin';"
+RUN mysql -u root -p -e "GRANT ALL PRIVILEGES ON whmcs.* TO whmcsuser@localhost;"
 
 # Setup WHMCS
 RUN echo "**** Setting WHMCS Release Version ****" && \
