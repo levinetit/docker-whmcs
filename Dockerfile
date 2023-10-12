@@ -21,11 +21,6 @@ ENV WHMCS_SERVER_IP="\$server_addr" WHMCS_SERVER_URL="_"
 
 ENV DEBIAN_FRONTEND="noninteractive"
 
-RUN apt-key adv --keyserver keys.mariadb.org --recv-keys 0xF1656F24C74CD1D8
-RUN echo "deb [arch=amd64,arm64] https://downloads.mariadb.org/mariadb/repositories/Ubuntu/ jammy main" | tee /etc/apt/sources.list.d/mariadb.list
-RUN apt-get update
-RUN apt-get install mariadb-server
-
 # Install nginx and PHP
 RUN echo "**** Install Dependencies ****" && \
     apt-get -y update && \
