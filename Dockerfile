@@ -21,24 +21,11 @@ ENV WHMCS_SERVER_IP="\$server_addr" WHMCS_SERVER_URL="_"
 
 ENV DEBIAN_FRONTEND="noninteractive"
 
-# Add MariaDB repository
+RUN apt-key adv --keyserver keys.mariadb.org --recv-keys 0xF1656F24C74CD1D8
 RUN echo "deb [arch=amd64,arm64] https://downloads.mariadb.org/mariadb/repositories/Ubuntu/ jammy main" | tee /etc/apt/sources.list.d/mariadb.list
-
-# Update the sources list
 RUN apt-get update
+RUN apt-get install mariadb-server
 
-# Install MariaDB
-RUN apt-get -y install mariadb-server
-
-
-# Create the WHMCS database
-RUN echo "**** Create the WHMCS database ****" && \
-    mysql -uroot -p -e "CREATE DATABASE whmcs;"
-
-# Create the WHMCS user
-RUN echo "**** Create the WHMCS user ****" && \
-    mysql -uroot -p -e "GRANT ALL ON whmcs.* TO 'whmcsuser'@'localhost' IDENTIFIED BY 'whmcspass';"
-    
 # Install nginx and PHP
 RUN echo "**** Install Dependencies ****" && \
     apt-get -y update && \
