@@ -64,8 +64,9 @@ jobs:
       - name: Generate build date
         id: gen_date
         run: |
-          BUILD_DATE=$(date +%Y-%m-%dT%H:%M:%S%z)
-          echo "**** Setting build date to $BUILD_DATE ****" >> $GITHUB_OUTPUT
+          BUILD_DATE=$(date '+%Y-%m-%dT%H:%M:%S%:z')
+          echo "**** Setting build date to $BUILD_DATE ****"
+          echo "${BUILD_DATE}" >> $GITHUB_STATE
 
       - name: Build and push
         id: docker_build
@@ -74,8 +75,6 @@ jobs:
           files: |
             ./docker-bake.hcl
             ${{ steps.docker_meta.outputs.bake-file }}
-          set: |
-            image.args.BUILD_DATE=${{ steps.gen_date.outputs.build_date }}
           targets: publish
           push: true
 
@@ -83,3 +82,4 @@ jobs:
         id: cleanup
         run: |
           rm -f ${HOME}/.docker/config.json
+          
