@@ -65,7 +65,7 @@ jobs:
         id: gen_date
         run: |
           BUILD_DATE=$(date '+%Y-%m-%dT%H:%M:%S%:z')
-          echo "**** Setting build date to $BUILD_DATE ****"
+          echo "**** Setting build date to $BUILD_DATE ****" >> $GITHUB_OUTPUT
           echo "${BUILD_DATE}" >> $GITHUB_OUTPUT
 
       - name: Build and push
