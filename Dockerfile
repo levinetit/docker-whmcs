@@ -6,7 +6,7 @@ LABEL build_date="Build-date:- ${BUILD_DATE}"
 LABEL maintainer="levinetit"
 
 ARG TARGETARCH
-# 8.1
+# 8.3
 ARG PHP_RELEASE
 # 8.8.0
 ARG WHMCS_RELEASE
