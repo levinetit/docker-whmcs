@@ -6,9 +6,9 @@ LABEL build_date="Build-date:- ${BUILD_DATE}"
 LABEL maintainer="levinetit"
 
 ARG TARGETARCH
-# 8.3
+# 8.1
 ARG PHP_RELEASE
-# 8.8.0
+8.3.0
 ARG WHMCS_RELEASE
 
 ENV PHP_VERSION=${PHP_RELEASE}
