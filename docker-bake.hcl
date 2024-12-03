@@ -11,7 +11,7 @@ group "publish" {
 # ---- variables ----
 
 variable "PHP_RELEASE" {
-    default = "8.2"
+    default = "8.1"
 }
 
 variable "WHMCS_RELEASE" {
