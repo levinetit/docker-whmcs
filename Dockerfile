@@ -162,7 +162,7 @@ COPY root/ /
 
 # ssmtp service for SMTP Relay
 # COPY --from=ajoergensen/baseimage-ubuntu /etc/service/. /etc/service/
-RUN     chmod -v +x /etc/* /etc/service/*/run
+RUN chmod +x /etc/services.d/*
 
 VOLUME /config
 
