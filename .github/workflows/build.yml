@@ -70,7 +70,7 @@ jobs:
 
       - name: Build and push
         id: docker_build
-        uses: docker/bake-action@v4
+        uses: docker/bake-action@v5
         with:
           files: |
             ./docker-bake.hcl
