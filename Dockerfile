@@ -32,6 +32,7 @@ RUN echo "**** Install Dependencies ****" && \
         curl \
         htop \
         jq \
+        sudo \
         less \
         net-tools \
         openssl \
