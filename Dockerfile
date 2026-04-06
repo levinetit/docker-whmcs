@@ -7,7 +7,7 @@ LABEL maintainer="levinetit"
 ARG TARGETARCH
 # 8.2
 ARG PHP_RELEASE
-# 8.8.0
+# 9.0.x (latest stable fetched automat din API daca nu e specificat)
 ARG WHMCS_RELEASE
 
 ENV PHP_VERSION=${PHP_RELEASE}
