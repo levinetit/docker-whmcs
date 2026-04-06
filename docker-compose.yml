@@ -1,6 +1,6 @@
 services:
   db:
-    image: mariadb:11
+    image: mariadb:latest
     container_name: whmcs-db
     env_file: .env
     environment:
