@@ -52,7 +52,7 @@ RUN echo "**** Install Dependencies ****" && \
     echo "**** Install Nginx Packages ****" && \
     apt-get -y install --no-install-recommends \
         apache2-utils \
-        nginx-full && \
+        nginx && \
     echo "**** Install PHP Packages ****" && \
     apt-get -y install --no-install-recommends \
         php-pear \
