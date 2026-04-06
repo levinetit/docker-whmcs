@@ -1,95 +1,115 @@
 WHMCS Docker Image
 ==================
 
-Ready to use docker image for WHMCS environment.
+Ready to use docker image for WHMCS environment, including MariaDB.
 
 ## Features
------------
 
-* Using PHP 8.2 (required for WHMCS 9.0+)
+* PHP 8.2 (required for WHMCS 9.0+)
 * ionCube loader ready
 * SourceGuardian loader ready
 * Nginx server configuration for WHMCS
+* MariaDB 11 included in docker-compose stack
+* Auto-configuration of `configuration.php` from environment variables
+* OPcache disabled (recommended by WHMCS)
 * Installed default cron for WHMCS
-* Custom mapping volume for WHMCS installation & configuration at `/config`
+* Persistent storage via `/config` volume
 * Multi-arch image supporting both `x86-64` & `arm64`
-* (Optional) htpasswd-protected `/admin` pages for easy protection from bots
+* Optional htpasswd protection for `/admin` pages
 
 ## Supported Architectures
---------------------------
-
-We utilise the docker manifest for multi-platform awareness. More information is available from docker [here](https://github.com/docker/distribution/blob/master/docs/spec/manifest-v2-2.md#manifest-list).
-
-Simply pulling `ghcr.io/levinetit/whmcs:latest` should retrieve the correct image for your arch.
-
-The architectures supported by this image are:
 
 | Architecture | Available |
 | :----: | :----: |
 | x86-64 | ✅ |
 | arm64 | ✅ |
 
-## Usage
---------
+## Quick Start
 
-Here are some example snippets to help you get started creating a container.
+```bash
+git clone https://github.com/levinetit/docker-whmcs.git
+cd docker-whmcs
+cp .env.example .env
+# Editeaza .env cu datele tale
+docker compose pull && docker compose up -d
+```
 
-### docker-compose (recommended, [click here for more info](https://docs.docker.com/compose/compose-file/deploy/))
+Dupa pornire, mergi la `http://your-domain/install/install.php` pentru setup initial.
+
+## docker-compose (recommended)
 
 ```yaml
----
-version: "3.8"
 services:
+  db:
+    image: mariadb:11
+    container_name: whmcs-db
+    env_file: .env
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - ./db:/var/lib/mysql
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
   whmcs:
     image: ghcr.io/levinetit/whmcs:latest
-    hostname: whmcs
     container_name: whmcs
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=UTC
-      - AUTH_USER=whmcs
-      - AUTH_PASS=whmcs@server:2022
-      - WHMCS_SERVER_IP=1.1.1.1
-      - WHMCS_SERVER_URL=whmcs.example.com
+    env_file: .env
     volumes:
-      - /path/to/whmcs:/config
+      - ./data:/config
+    depends_on:
+      db:
+        condition: service_healthy
     ports:
       - 8043:80
     restart: unless-stopped
 ```
 
-### docker cli ([click here for more info](https://docs.docker.com/engine/reference/commandline/cli/))
-
-```bash
-docker run -d \
-  --name=whmcs \
-  -e PUID=1000 \
-  -e PGID=1000 \
-  -e TZ=UTC \
-  -e AUTH_USER=whmcs \
-  -e AUTH_PASS=whmcs@server:2022 \
-  -e WHMCS_SERVER_IP=1.1.1.1 \
-  -e WHMCS_SERVER_URL=whmcs.example.com \
-  -p 8043:80 \
-  -v /path/to/whmcs:/config \
-  --restart unless-stopped \
-  ghcr.io/levinetit/whmcs:latest
-```
-
 ## Parameters
--------------
-
-Container images are configured using parameters passed at runtime (such as those above). These parameters are separated by a colon and indicate `<external>:<internal>` respectively. For example, `-p 8080:80` would expose port `80` from inside the container to be accessible from the host's IP on port `8080` outside the container.
 
 | Parameter | Function |
-| :----: | --- |
-| `-p 80` | WHMCS webUI (can be proxied via Nginx/Traefik/Caddy for SSL) |
-| `-e PUID=1000` | for UserID |
-| `-e PGID=1000` | for GroupID |
-| `-e TZ=UTC` | Specify a timezone to use. Ex: UTC |
-| `-e AUTH_USER=whmcs` (optional) | Username for the `/admin` pages |
-| `-e AUTH_PASS=whmcs@server:2022` (optional) | Password for the `/admin` pages |
-| `-e WHMCS_SERVER_IP=1.1.1.1` | Required to validate your WHMCS licence (use your docker host public IP address) |
-| `-e WHMCS_SERVER_URL=whmcs.example.com` | Required to validate your WHMCS licence |
-| `-v /config` | WHMCS data storage location |
+| --- | --- |
+| `-p 80` | WHMCS webUI (proxiabil via Nginx/Traefik/Caddy pentru SSL) |
+| `-e PUID=1000` | UserID |
+| `-e PGID=1000` | GroupID |
+| `-e TZ=UTC` | Timezone (ex: `Europe/Bucharest`) |
+| `-e WHMCS_LICENSE` | Cheia de licenta WHMCS |
+| `-e WHMCS_SERVER_IP` | IP-ul public al serverului (necesar pentru validarea licentei) |
+| `-e WHMCS_SERVER_URL` | Domeniul WHMCS (necesar pentru validarea licentei) |
+| `-e DB_HOST` | Hostname baza de date (default: `whmcs-db`) |
+| `-e DB_PORT` | Port baza de date (default: `3306`) |
+| `-e DB_USER` | Username baza de date |
+| `-e DB_PASSWORD` | Parola baza de date |
+| `-e DB_NAME` | Numele bazei de date (default: `whmcs`) |
+| `-e MYSQL_ROOT_PASSWORD` | Parola root MariaDB |
+| `-e CC_ENCRYPTION_HASH` | Hash 64 caractere pentru criptarea datelor (generat automat daca lipseste) |
+| `-e AUTH_USER` (optional) | Username htpasswd pentru protectia paginii `/admin` |
+| `-e AUTH_PASS` (optional) | Parola htpasswd pentru protectia paginii `/admin` |
+| `-v ./data:/config` | Locatia datelor WHMCS |
+| `-v ./db:/var/lib/mysql` | Locatia datelor MariaDB |
+
+## Reinstalare de la zero
+
+```bash
+cd /path/to/whmcs
+docker compose down -v   # opreste si sterge volumele
+rm -rf data/ db/         # sterge datele
+docker compose pull      # trage imaginea noua
+docker compose up -d     # porneste din nou
+```
+
+## After Install
+
+Dupa finalizarea wizard-ului de instalare, sterge directorul `install` din securitate:
+
+```bash
+docker exec whmcs rm -rf /var/www/whmcs/install
+```
