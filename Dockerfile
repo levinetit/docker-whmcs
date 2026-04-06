@@ -138,6 +138,7 @@ RUN case ${TARGETARCH} in \
 RUN echo "**** Setting Up nginx ****" && \
     mkdir -p /var/www && \
     chown -R abc:abc /var/www && \
+    mkdir -p /etc/nginx/sites-available /etc/nginx/sites-enabled && \
     ln -svf /dev/stdout /var/log/nginx/access.log && \
     ln -svf /dev/stderr /var/log/nginx/error.log && \
     rm -vf /etc/nginx/sites-enabled/* /etc/nginx/conf.d/*
