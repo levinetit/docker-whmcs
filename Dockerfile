@@ -40,9 +40,6 @@ RUN echo "**** Install Dependencies ****" && \
         zip && \
     echo "**** Add PPA: ondrej/php ****" && \
     add-apt-repository -y "ppa:ondrej/php" && \
-    echo "**** Add nginx official mainline repo ****" && \
-    curl -fsSL https://nginx.org/keys/nginx_signing.key | gpg --dearmor -o /etc/apt/keyrings/nginx.gpg && \
-    echo "deb [signed-by=/etc/apt/keyrings/nginx.gpg] http://nginx.org/packages/mainline/ubuntu noble nginx" > /etc/apt/sources.list.d/nginx.list && \
     echo "**** Update Repositories ****" && \
     apt-get -y update && \
     echo "**** Upgrade Packages ****" && \
@@ -50,7 +47,7 @@ RUN echo "**** Install Dependencies ****" && \
     echo "**** Install Nginx Packages ****" && \
     apt-get -y install --no-install-recommends \
         apache2-utils \
-        nginx && \
+        nginx-full && \
     echo "**** Install PHP Packages ****" && \
     apt-get -y install --no-install-recommends \
         php-pear \
