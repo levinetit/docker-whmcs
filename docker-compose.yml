@@ -1,0 +1,19 @@
+---
+services:
+  whmcs:
+    image: ghcr.io/levinetit/whmcs:latest
+    hostname: whmcs
+    container_name: whmcs
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=UTC
+      - AUTH_USER=whmcs          # optional - protejeaza /admin
+      - AUTH_PASS=changeme       # optional
+      - WHMCS_SERVER_IP=1.1.1.1  # IP public Docker host (pentru licenta WHMCS)
+      - WHMCS_SERVER_URL=whmcs.example.com
+    volumes:
+      - ./data/whmcs:/config
+    ports:
+      - 8043:80
+    restart: unless-stopped

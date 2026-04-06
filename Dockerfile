@@ -5,11 +5,9 @@ LABEL build_date="Build-date:- ${BUILD_DATE}"
 LABEL maintainer="levinetit"
 
 ARG TARGETARCH
-# 8.1
+# 8.2
 ARG PHP_RELEASE
 # 8.8.0
-ARG WHMCS_RELEASE
-
 ARG WHMCS_RELEASE
 
 ENV PHP_VERSION=${PHP_RELEASE}
@@ -73,7 +71,6 @@ RUN echo "**** Install Dependencies ****" && \
         php${PHP_VERSION}-imap \
         php${PHP_VERSION}-intl \
         php${PHP_VERSION}-xml \
-        php${PHP_VERSION}-xmlrpc \
         php${PHP_VERSION}-zip \
         php${PHP_VERSION}-bz2 \
         php${PHP_VERSION}-mbstring \
@@ -134,7 +131,7 @@ RUN case ${TARGETARCH} in \
     esac && \
     echo "**** Installing ionCube for PHP: Architecture: ${IONCUBE_ARCH} ****" && \
     mkdir /tmp/ioncube && cd /tmp/ioncube && \
-    curl --user-agent "Mozilla" -o ioncube.zip http://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_${IONCUBE_ARCH}.zip && \
+    curl --user-agent "Mozilla" -o ioncube.zip https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_${IONCUBE_ARCH}.zip && \
     unzip -q ioncube.zip && mkdir -p /usr/lib/php/ioncube && cp -vf ioncube/ioncube_loader_lin_${PHP_VERSION}.so /usr/lib/php/ioncube/ && \
     echo "zend_extension = /usr/lib/php/ioncube/ioncube_loader_lin_${PHP_VERSION}.so" > /etc/php/${PHP_VERSION}/mods-available/00-ioncube.ini && \
     ln -sf /etc/php/${PHP_VERSION}/mods-available/00-ioncube.ini /etc/php/${PHP_VERSION}/fpm/conf.d/00-ioncube.ini && \
@@ -156,14 +153,17 @@ RUN echo "**** Setting WHMCS Release Version ****" && \
     fi && \
     echo "**** Downloading WHMCS Release: ${WHMCS_RELEASE} ****" && \
     mkdir -p /whmcs && \
-    curl --user-agent "Mozilla" -o /whmcs/whmcs.zip -L \
+    curl --user-agent "Mozilla" --max-time 300 -o /whmcs/whmcs.zip -L \
         https://releases.whmcs.com/v2/pkgs/whmcs-${WHMCS_RELEASE}-release.1.zip
 
 COPY root/ /
 
 # ssmtp service for SMTP Relay
 # COPY --from=ajoergensen/baseimage-ubuntu /etc/service/. /etc/service/
-RUN chmod +x /etc/services.d/*
+RUN find /etc/services.d -type f -exec chmod +x {} \;
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost/ || exit 1
 
 VOLUME /config
 

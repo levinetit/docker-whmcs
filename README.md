@@ -6,8 +6,9 @@ Ready to use docker image for WHMCS environment.
 ## Features
 -----------
 
-* Using latest php version 7.4
-* Ioncube loader ready
+* Using PHP 8.2 (required for WHMCS 9.0+)
+* ionCube loader ready
+* SourceGuardian loader ready
 * Nginx server configuration for WHMCS
 * Installed default cron for WHMCS
 * Custom mapping volume for WHMCS installation & configuration at `/config`
@@ -88,7 +89,7 @@ Container images are configured using parameters passed at runtime (such as thos
 | `-e PGID=1000` | for GroupID |
 | `-e TZ=UTC` | Specify a timezone to use. Ex: UTC |
 | `-e AUTH_USER=whmcs` (optional) | Username for the `/admin` pages |
-| `-e AUTH_USER=whmcs@server:2022` (optional) | Password for the `/admin` pages |
+| `-e AUTH_PASS=whmcs@server:2022` (optional) | Password for the `/admin` pages |
 | `-e WHMCS_SERVER_IP=1.1.1.1` | Required to validate your WHMCS licence (use your docker host public IP address) |
 | `-e WHMCS_SERVER_URL=whmcs.example.com` | Required to validate your WHMCS licence |
 | `-v /config` | WHMCS data storage location |
