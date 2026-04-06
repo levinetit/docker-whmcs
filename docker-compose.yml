@@ -10,6 +10,7 @@ services:
       MYSQL_PASSWORD: ${DB_PASSWORD}
     volumes:
       - ./db:/var/lib/mysql
+      - ./conf/mariadb.cnf:/etc/mysql/conf.d/whmcs.cnf:ro
     networks:
       apps:
         ipv4_address: 172.88.88.62
