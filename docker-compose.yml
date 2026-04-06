@@ -1,19 +1,46 @@
----
 services:
+  db:
+    image: mariadb:11
+    container_name: whmcs-db
+    env_file: .env
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - ./db:/var/lib/mysql
+    networks:
+      apps:
+        ipv4_address: 172.88.88.62
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
   whmcs:
     image: ghcr.io/levinetit/whmcs:latest
-    hostname: whmcs
     container_name: whmcs
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=UTC
-      - AUTH_USER=whmcs          # optional - protejeaza /admin
-      - AUTH_PASS=changeme       # optional
-      - WHMCS_SERVER_IP=1.1.1.1  # IP public Docker host (pentru licenta WHMCS)
-      - WHMCS_SERVER_URL=whmcs.example.com
+    env_file: .env
     volumes:
-      - ./data/whmcs:/config
-    ports:
-      - 8043:80
+      - ./data:/config
+    networks:
+      apps:
+        ipv4_address: 172.88.88.61
+    depends_on:
+      db:
+        condition: service_healthy
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.whmcs.rule=Host(`whmcs.levinetit.com`)
+      - traefik.http.routers.whmcs.entrypoints=websecure
+      - traefik.http.routers.whmcs.tls.certresolver=letsencrypt
+      - traefik.http.services.whmcs.loadbalancer.server.port=80
     restart: unless-stopped
+
+networks:
+  apps:
+    external: true
