@@ -16,6 +16,8 @@ ENV TZ="UTC" PGID="1000" PUID="1000"
 
 ENV WHMCS_SERVER_IP="\$server_addr" WHMCS_SERVER_URL="_"
 
+ENV DB_HOST="" DB_PORT="3306" DB_USER="" DB_PASSWORD="" DB_NAME="whmcs" CC_ENCRYPTION_HASH=""
+
 ENV DEBIAN_FRONTEND="noninteractive"
 
 # Install nginx and PHP
@@ -72,7 +74,8 @@ RUN echo "**** Install Dependencies ****" && \
         php${PHP_VERSION}-zip \
         php${PHP_VERSION}-bz2 \
         php${PHP_VERSION}-mbstring \
-        php${PHP_VERSION}-curl && \
+        php${PHP_VERSION}-curl \
+        default-mysql-client && \
     echo "**** Cleanup ****" && \
     apt-get -y autoremove && \
     apt-get -y purge && \

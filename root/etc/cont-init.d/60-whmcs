@@ -11,8 +11,27 @@ if [ ! -f "/config/www/whmcs/index.php" ]; then
 fi
 
 echo "**** Setting WHMCS Configuration ****"
-if [ ! -f "/config/whmcs/configuration.php" ] && [ -f "/config/www/whmcs/configuration.php.new" ]; then
-  cp -v /config/www/whmcs/configuration.php.new /config/whmcs/configuration.php
+if [ ! -f "/config/whmcs/configuration.php" ]; then
+  if [ -n "${DB_HOST}" ]; then
+    echo "**** Auto-generating configuration.php din variabile de mediu ****"
+    CC_HASH=${CC_ENCRYPTION_HASH:-$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | head -c 64)}
+    cat > /config/whmcs/configuration.php <<EOF
+<?php
+\$db_host = '${DB_HOST}';
+\$db_port = '${DB_PORT:-3306}';
+\$db_username = '${DB_USER}';
+\$db_password = '${DB_PASSWORD}';
+\$db_name = '${DB_NAME}';
+\$mysql_charset = 'utf8mb4';
+\$cc_encryption_hash = '${CC_HASH}';
+\$templates_compiledir = '/var/www/whmcs_storage/templates_c';
+\$attachments_dir = '/var/www/whmcs_storage/attachments/';
+\$downloads_dir = '/var/www/whmcs_storage/downloads/';
+EOF
+    chown abc:abc /config/whmcs/configuration.php
+  elif [ -f "/config/www/whmcs/configuration.php.new" ]; then
+    cp -v /config/www/whmcs/configuration.php.new /config/whmcs/configuration.php
+  fi
 fi
 if [ -f "/config/whmcs/configuration.php" ]; then
   cp -vf /config/whmcs/configuration.php /config/www/whmcs/configuration.php
@@ -53,4 +72,13 @@ echo "**** Linking WHMCS Storage: /config/www/whmcs_storage - /var/www/whmcs_sto
 if [ ! -L "/var/www/whmcs_storage" ]; then
   rm -rf /var/www/whmcs_storage
   ln -svf /config/www/whmcs_storage /var/www/whmcs_storage
+fi
+
+echo "**** Waiting for DB: ${DB_HOST} ****"
+if [ -n "${DB_HOST}" ]; then
+  until mysqladmin ping -h "${DB_HOST}" -u "${DB_USER}" -p"${DB_PASSWORD}" --silent 2>/dev/null; do
+    echo "  Waiting for MariaDB..."
+    sleep 2
+  done
+  echo "**** DB ready ****"
 fi
