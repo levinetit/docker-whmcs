@@ -27,6 +27,7 @@ if [ ! -f "/config/whmcs/configuration.php" ]; then
 \$templates_compiledir = '/var/www/whmcs_storage/templates_c';
 \$attachments_dir = '/var/www/whmcs_storage/attachments/';
 \$downloads_dir = '/var/www/whmcs_storage/downloads/';
+\$storage_path = '/var/www/whmcs_storage/storage/';
 EOF
     chown abc:abc /config/whmcs/configuration.php
   elif [ -f "/config/www/whmcs/configuration.php.new" ]; then
@@ -57,9 +58,17 @@ if [ ! -L "/var/www/whmcs" ]; then
   ln -svf /config/www/whmcs /var/www/whmcs
 fi
 
-echo "**** Create WHMCS Storage Directories: /config/www/whmcs_storage/{whmcs_updater_tmp_dir,downloads,attachments/projects,templates_c} ****"
-mkdir -p /config/www/whmcs_storage/{whmcs_updater_tmp_dir,downloads,attachments/projects,templates_c} && \
-  chown abc:abc /config/www/whmcs_storage/{whmcs_updater_tmp_dir,downloads,attachments/projects,templates_c}
+echo "**** Create WHMCS Storage Directories: /config/www/whmcs_storage/{whmcs_updater_tmp_dir,downloads,attachments/projects,templates_c,storage/logs,storage/cache,storage/framework/sessions,storage/framework/views} ****"
+mkdir -p \
+  /config/www/whmcs_storage/whmcs_updater_tmp_dir \
+  /config/www/whmcs_storage/downloads \
+  /config/www/whmcs_storage/attachments/projects \
+  /config/www/whmcs_storage/templates_c \
+  /config/www/whmcs_storage/storage/logs \
+  /config/www/whmcs_storage/storage/cache \
+  /config/www/whmcs_storage/storage/framework/sessions \
+  /config/www/whmcs_storage/storage/framework/views && \
+  chown -R abc:abc /config/www/whmcs_storage
 
 echo "**** Setting Storage Permissions: /config/www/whmcs_storage ****"
 if [ -d "/config/www/whmcs_storage" ]; then
