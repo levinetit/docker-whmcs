@@ -6,10 +6,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```bash
 # Build multi-platform image locally (amd64 + arm64)
-docker buildx bake image-local --set image.args.PHP_RELEASE=8.2
+docker buildx bake image-local --set image.args.PHP_RELEASE=8.4
 
 # Build and push to GHCR (requires login)
-docker buildx bake publish --set image.args.PHP_RELEASE=8.2
+docker buildx bake publish --set image.args.PHP_RELEASE=8.4
 
 # Test locally with docker compose
 cp .env.example .env
@@ -26,7 +26,7 @@ docker exec whmcs php -m | grep -E 'ionCube|SourceGuardian'
 
 This is a **single Docker image** (`ghcr.io/levinetit/whmcs`) that bundles:
 - **Nginx** (from `ppa:ondrej/nginx`, package `nginx-full` — required for `sites-available/sites-enabled` structure used by init scripts)
-- **PHP 8.2-FPM** (from `ppa:ondrej/php`)
+- **PHP 8.4-FPM** (from `ppa:ondrej/php`)
 - **ionCube Loader** + **SourceGuardian** (Zend extensions loaded at PHP startup)
 - **WHMCS** zip downloaded at build time to `/whmcs/whmcs.zip` (extracted at runtime)
 
@@ -51,7 +51,7 @@ Base image: `lscr.io/linuxserver/baseimage-ubuntu:noble` — uses the linuxserve
 
 ## Critical Constraints
 
-- **PHP version**: Must stay at **8.2** — WHMCS 9.0 requires 8.2+; ionCube/SourceGuardian loader files are version-specific (`ixed.8.2.lin`, `ioncube_loader_lin_8.2.so`)
+- **PHP version**: Must stay at **8.4** — WHMCS 9.0 requires 8.2+; ionCube/SourceGuardian loader files are version-specific (`ixed.8.4.lin`, `ioncube_loader_lin_8.4.so`)
 - **nginx package**: Must use `nginx-full` from `ppa:ondrej/nginx` — the official nginx.org package lacks `sites-available/sites-enabled` and is missing features the init scripts depend on
 - **MariaDB**: Deploy with `conf/mariadb.cnf` to disable strict `sql_mode` (`NO_ENGINE_SUBSTITUTION`) and set `utf8mb4` charset — WHMCS is incompatible with MySQL strict mode
 - **OPcache**: Keep `opcache.enable = 0` in PHP ini — WHMCS explicitly requires OPcache disabled

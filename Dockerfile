@@ -5,7 +5,7 @@ LABEL build_date="Build-date:- ${BUILD_DATE}"
 LABEL maintainer="levinetit"
 
 ARG TARGETARCH
-# 8.2
+# 8.4
 ARG PHP_RELEASE
 # 9.0.x (latest stable fetched automat din API daca nu e specificat)
 ARG WHMCS_RELEASE
@@ -42,8 +42,6 @@ RUN echo "**** Install Dependencies ****" && \
         zip && \
     echo "**** Add PPA: ondrej/php ****" && \
     add-apt-repository -y "ppa:ondrej/php" && \
-    echo "**** Add PPA: ondrej/nginx ****" && \
-    add-apt-repository -y "ppa:ondrej/nginx" && \
     echo "**** Update Repositories ****" && \
     apt-get -y update && \
     echo "**** Upgrade Packages ****" && \

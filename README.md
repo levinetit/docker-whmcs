@@ -5,7 +5,7 @@ Ready to use docker image for WHMCS environment, including MariaDB.
 
 ## Features
 
-* PHP 8.2 (required for WHMCS 9.0+)
+* PHP 8.4 (recommended for WHMCS 9.0+, min 8.2)
 * ionCube loader ready
 * SourceGuardian loader ready
 * Nginx server configuration for WHMCS
