@@ -20,6 +20,7 @@ jobs:
       - uses: docker/setup-qemu-action@v4
         with:
           platforms: amd64,arm64
+          cache-image: false  # nu cache-ui binfmt -> elimina warning 'Unable to reserve cache'
 
       - uses: docker/setup-buildx-action@v4
 
