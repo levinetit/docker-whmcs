@@ -66,6 +66,16 @@ server {
         return 403;
     }
 
+    location ^~ /storage/ {
+        deny all;
+        return 403;
+    }
+
+    location ^~ /bootstrap/ {
+        deny all;
+        return 403;
+    }
+
     location ~* \.(?:jpg|jpeg|gif|png|ico|cur|gz|svg|svgz|mp4|ogg|ogv|webm|htc|svg|woff|woff2|ttf)\$ {
         expires max;
         access_log off;
@@ -83,9 +93,10 @@ server {
     }
 
     # WHMCS Admin
-
     location /admin {
         include /etc/nginx/conf.d/admin;
+        index index.php;
+        try_files $uri $uri/ /admin/index.php$is_args$args;
     }
 
     # Friendly URL(s) for WHMCS: https://hostup.org/blog/whmcs-friendly-urls-configuration-for-nginx/

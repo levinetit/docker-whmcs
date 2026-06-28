@@ -15,6 +15,9 @@ if [ ! -f "/config/whmcs/configuration.php" ]; then
   if [ -n "${DB_HOST}" ]; then
     echo "**** Auto-generating configuration.php din variabile de mediu ****"
     CC_HASH=${CC_ENCRYPTION_HASH:-$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | head -c 64)}
+    if [ -z "${WHMCS_LICENSE}" ]; then
+      echo "**** WARNING: WHMCS_LICENSE is not set — license key will be empty in configuration.php ****"
+    fi
     cat > /config/whmcs/configuration.php <<EOF
 <?php
 \$db_host = '${DB_HOST}';
@@ -24,6 +27,7 @@ if [ ! -f "/config/whmcs/configuration.php" ]; then
 \$db_name = '${DB_NAME}';
 \$mysql_charset = 'utf8mb4';
 \$cc_encryption_hash = '${CC_HASH}';
+\$license = '${WHMCS_LICENSE}';
 \$templates_compiledir = '/var/www/whmcs_storage/templates_c';
 \$attachments_dir = '/var/www/whmcs_storage/attachments/';
 \$downloads_dir = '/var/www/whmcs_storage/downloads/';

@@ -43,7 +43,7 @@ Base image: `lscr.io/linuxserver/baseimage-ubuntu:noble` — uses the linuxserve
 - `/config/www/whmcs/` — WHMCS web root (symlinked to `/var/www/whmcs`)
 - `/config/www/whmcs_storage/` — writable dirs: `templates_c`, `attachments`, `downloads` (symlinked to `/var/www/whmcs_storage`)
 
-**Auto-configuration** (`root/etc/cont-init.d/60-whmcs`): if `DB_HOST` env var is set and `configuration.php` doesn't exist, it's generated automatically. `CC_ENCRYPTION_HASH` is auto-generated if not provided.
+**Auto-configuration** (`root/etc/cont-init.d/60-whmcs`): if `DB_HOST` env var is set and `configuration.php` doesn't exist, it's generated automatically. `CC_ENCRYPTION_HASH` is auto-generated if not provided. `WHMCS_LICENSE` is required for WHMCS license activation and is written as `$license` in the generated config.
 
 **PHP config:** `root/defaults/php/90-default.ini` is applied to both FPM and CLI. OPcache is intentionally disabled (WHMCS requirement).
 
