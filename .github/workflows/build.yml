@@ -5,6 +5,11 @@ on:
     branches: [main]
     tags: ['v*']
 
+# Anuleaza build-ul in curs cand vine un push nou (evita rulari duplicate + conflict cache binfmt)
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -34,14 +39,16 @@ jobs:
             type=sha
             type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
 
-      - uses: docker/bake-action@v5
-        with:
-          files: |
-            ./docker-bake.hcl
-            ${{ steps.meta.outputs.bake-file }}
-          targets: publish
-          push: ${{ github.event_name != 'pull_request' }}
-          set: |
-            *.cache-from=type=gha
-            *.cache-to=type=gha,mode=max
-            image.args.BUILD_DATE=${{ github.run_id }}
+      # buildx bake CLI direct (fara docker/bake-action care e node20)
+      - name: Build & push (bake)
+        env:
+          PUSH_FLAG: ${{ github.event_name != 'pull_request' && '--push' || '' }}
+        run: |
+          docker buildx bake \
+            -f ./docker-bake.hcl \
+            -f "${{ steps.meta.outputs.bake-file }}" \
+            --set "*.cache-from=type=gha" \
+            --set "*.cache-to=type=gha,mode=max" \
+            --set "image.args.BUILD_DATE=${{ github.run_id }}" \
+            $PUSH_FLAG \
+            publish
